@@ -1,8 +1,9 @@
 const { json } = require('express');
 const express = require('express'); 
 const app = express(); 
-app.use(express.json());             
-app.use(express.urlencoded());    
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+ 
 
 
 // List of users
@@ -11,10 +12,6 @@ let users = [
   { id: 2, name: 'Shariq' }, 
   { id: 3, name: 'Jaleel' }
 ]; 
-
-app.listen(3000, () => { 
-  console.log('Server is listening on port 3000'); 
-}); 
 
 
 // Home page request
@@ -26,6 +23,7 @@ app.get('/', (req, res) => {
 // Get all users in the array
 // curl http://localhost:3000/users
 app.get('/users', (req, res) => { 
+  console.log("Displaying all users");
   res.json(users); 
 }); 
 
@@ -51,7 +49,7 @@ app.get('/users/:id', function(req, res) {
 
 
 // Post a new user
-// curl -X POST -H 'Content-Type: application/json' -d '{"id":4,"name":"faisal"}' http://localhost:3000/users
+// curl -X POST -H "Content-Type: application/json" -d "{\"id\": 4, \"name\": \"John\"}" http://localhost:3000/users
 app.post('/users', (req, res) => {
   if (req.body === undefined) {
     console.log("ERROR: req.body is undefined");
@@ -69,7 +67,7 @@ app.post('/users', (req, res) => {
  
 
 // Update a user via an existing ID
-// curl -X PUT http://localhost:3000/users/-id- -H 'Content-Type: application/json' -d '{"id":1,"name":"syed"}'
+// curl -X PUT -H "Content-Type: application/json" -d "{\"id\":1,\"name\":\"Mark\"}" http://localhost:3000/users/1
 app.put('/users/:id', (req, res) => { 
   const userId = parseInt(req.params.id); 
   console.log("Update user with ID: " + req.params.id);
@@ -79,9 +77,14 @@ app.put('/users/:id', (req, res) => {
 }); 
 
 // Delete a user via an existing ID
-// curl -X DELETE http://localhost:3000/users/-id-
+// curl -X DELETE http://localhost:3000/users/3
 app.delete('/users/:id', (req, res) => { 
   const userId = parseInt(req.params.id);
+  console.log("User deleated with ID: " + req.params.id);
   users = users.filter(user => user.id !== userId); 
   res.status(204).send(); 
+}); 
+
+app.listen(3000, () => { 
+  console.log('Server is listening on port 3000'); 
 }); 
